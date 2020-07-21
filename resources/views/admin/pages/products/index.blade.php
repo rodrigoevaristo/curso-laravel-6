@@ -5,85 +5,52 @@
 @section('content')
     <h1>Exibindo os produtos</h1>
 
-    <!-- Aula 25 - struturas de controle -->
-    @if ($teste === '123')
-        É igual
-    @elseif($teste == 123)
-        É igual numero 123
-    @else
-        É diferente
-    @endif
+    <a href="{{ route('products.create') }}" class="btn btn-primary">Cadastrar</a>
+    <hr>
 
-    @unless($teste === '123')
-        <P>unless para variavel $teste é falso, por isso está exibindo</P>
-    @endunless
-
-    @isset($teste2)
-        <P>variavel $teste2 existe</P>
-    @else
-        <p>Variável $teste2 não existe ou não foi declarada</p>
-    @endisset
-
-    @empty($teste3)
-        <p>Variável $teste3 está vazia</p>
-        @else
-            <p>Variável $teste3 não está vazia</p>
-    @endempty
-
-    <!--Verifica se está autenticado-->
-    @auth
-        Autenticado
-        @else
-            Não autenticado
-    @endauth
-
-    <!--Verifica se é convidado não autenticado -->
-    @guest
-        <p>Convidado não autenticado</p>
-    @endguest
-
-    @switch($teste)
-        @case(1)
-            Igual a 1
-            @break
-        @case(2)
-            Igual a 2
-        @case(12)
-            Igual a 12
-            @break
-        @default
-            valor default
-    @endswitch
+    <form action="{{ route('products.search') }}" method="post" class="form form-inline">
+        @csrf
+        <input type="text" name="filter" placeholder="Filtrar" class="form-control" value="{{ $filters['filter'] ?? '' }}">
+        <button type="submit" class="btn btn-info">Pesquisar</button>
+    </form>
 
     <hr>
-    <!-- Aula 26 - Estruturas de repetição Blade-->
-    Usando foreach
-    @if (isset($products))
-        @foreach ($products as $product)
-        <ul>
-            <li class="@if ($loop->last) last @endif">{{ $product}}</li>
-        </ul>
-        <!-- <p>{{ $product}}</p>-->
-        @endforeach
+    <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Imagem</th>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th width=100>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($products as $product)
+                <tr>
+                    <td>
+                        @if ($product->image)
+                            <img src="{{ url("storage/{$product->image}") }}" alt="{{ $product->name }}" style="max-width: 50px">
+                        @else
+
+                        @endif
+                    </td>
+                    <td>{{ $product->name }}</td>
+                    <td>{{ $product->price }}</td>
+                    <td>
+                        <a href="{{ route('products.edit', $product->id) }}">Editar</a>
+                        <a href="{{ route('products.show', $product->id) }}">Detalhes</a>
+                    </td>
+                </tr>
+            @endforeach
+
+        </tbody>
+    </table>
+
+    @if (isset($filters))
+        {!! $products->appends($filters)->links() !!}
+    @else
+        {!! $products->links() !!}
     @endif
 
-    <hr>
-    Usando forelse
-    @forelse ($products as $product)
-        <ul>
-            <li class="@if ($loop->first) last @endif">{{ $product}}</li>
-        </ul>
-    @empty
-        <p>Não existem produtos</p>
-    @endforelse
 
 @endsection
-
-<style>
-    .last {background: #CCC;}
-</style>
-
-<!-- Aula 27 - Includes, Components e Slots no Blade Laravel-->
-
-@include('admin.includes.alerts', ['content'=> 'Alerta de preços de produtos'])
-<hr>

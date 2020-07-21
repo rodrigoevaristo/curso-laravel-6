@@ -129,4 +129,7 @@ Route::delete('products/{id}', 'ProductController@destroy')->name('products.dest
 
 //Aula 19
 
+Route::any('products/search', 'ProductController@search')->name('products.search');
+
 Route::resource('products', 'ProductController');//->middleware('auth')
+//Route::post('products', 'ProductController@store')->name('products.store');
